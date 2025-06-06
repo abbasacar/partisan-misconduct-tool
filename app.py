@@ -21,7 +21,7 @@ st.set_page_config(
 
 # Load and process the real dataset
 @st.cache_data
-def load_real_dataset():
+def load_real_dataset(show_message=False):
     """Load the actual dataset from the uploaded Excel file"""
     try:
         # Try to read the Excel file with correct filename
@@ -72,20 +72,25 @@ def load_real_dataset():
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
         
-        st.success(f"✅ Loaded real dataset: {len(df):,} observations with {len(df.columns)} variables")
+        # Only show success message on specific pages
+        if show_message:
+            st.success(f"✅ Loaded real dataset: {len(df):,} observations with {len(df.columns)} variables")
         return df
         
     except FileNotFoundError:
-        st.warning("Excel file 'Dataset2025-06-06.xlsx' not found in app directory.")
-        return create_research_informed_dataset()
+        if show_message:
+            st.warning("Excel file 'Dataset2025-06-06.xlsx' not found in app directory.")
+        return create_research_informed_dataset(show_message)
     except Exception as e:
-        st.warning(f"Could not load Excel file: {str(e)}")
-        return create_research_informed_dataset()
+        if show_message:
+            st.warning(f"Could not load Excel file: {str(e)}")
+        return create_research_informed_dataset(show_message)
 
-def create_research_informed_dataset():
+def create_research_informed_dataset(show_message=False):
     """Create dataset based on known structure when Excel loading fails"""
     try:
-        st.info("📊 Creating research-informed dataset based on your data structure...")
+        if show_message:
+            st.info("📊 Creating research-informed dataset based on your data structure...")
         
         # This matches the patterns from your actual data
         sample_size = 3951  
@@ -118,7 +123,8 @@ def create_research_informed_dataset():
         return df
         
     except Exception as e2:
-        st.error(f"All loading methods failed: {str(e2)}. Using basic sample data.")
+        if show_message:
+            st.error(f"All loading methods failed: {str(e2)}. Using basic sample data.")
         return generate_sample_data()
 
 # Generate sample data (fallback)
@@ -413,8 +419,8 @@ def format_results_table(results, feature_names, selected_controls=None, industr
     
     return pd.DataFrame(results_data)
 
-# Load data (try real dataset first, fallback to sample)
-df = load_real_dataset()
+# Load data (try real dataset first, fallback to sample) - no message on initial load
+df = load_real_dataset(show_message=False)
 
 # Sidebar navigation
 st.sidebar.title("Navigation")
@@ -491,6 +497,9 @@ elif page == "Data":
     st.title("Dataset")
     st.markdown("---")
     
+    # Load data with message for this page
+    df = load_real_dataset(show_message=True)
+    
     st.header("Real Dataset Overview") 
     col1, col2, col3, col4 = st.columns(4)
     
@@ -538,6 +547,9 @@ elif page == "Data":
 elif page == "Analysis":
     st.title("Statistical Analysis")
     st.markdown("---")
+    
+    # Load data with message for this page
+    df = load_real_dataset(show_message=True)
     
     # Create two columns for layout
     col1, col2 = st.columns([1, 2])
