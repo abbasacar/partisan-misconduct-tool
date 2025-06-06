@@ -652,20 +652,20 @@ elif page == "Analysis":
             if results is not None:
                 # Format and display results
                 results_df = format_results_table(results, feature_names)
-                st.dataframe(results_df, use_container_width=True, hide_index=True)
+                st.table(results_df)
                 
                 # Display model summary statistics
-                col1, col2, col3, col4 = st.columns(4)
-                with col1:
-                    st.metric("Observations", f"{int(results.nobs):,}")
-                with col2:
-                    st.metric("Log-Likelihood", f"{results.llf:.2f}")
-                with col3:
-                    if hasattr(results, 'aic'):
-                        st.metric("AIC", f"{results.aic:.2f}")
-                with col4:
-                    if hasattr(results, 'bic'):
-                        st.metric("BIC", f"{results.bic:.2f}")
+                # col1, col2, col3, col4 = st.columns(4)
+                # with col1:
+                #     st.metric("Observations", f"{int(results.nobs):,}")
+                # with col2:
+                #     st.metric("Log-Likelihood", f"{results.llf:.2f}")
+                # with col3:
+                #     if hasattr(results, 'aic'):
+                #         st.metric("AIC", f"{results.aic:.2f}")
+                # with col4:
+                #     if hasattr(results, 'bic'):
+                #         st.metric("BIC", f"{results.bic:.2f}")
                 
                 st.caption("Note: *p<0.1; **p<0.05; ***p<0.01")
                 
